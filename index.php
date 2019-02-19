@@ -1,63 +1,92 @@
-<?php get_header( 'test' ) //template name: testBD?>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/css/bootstrap-select.min.css"/>
 
+<?php // get_header( 'test' ) //template name: testBD?>
 
+<?php
+    // autocompletado del buscador
+    error_reporting(0);
+    global $wpdb;
+    $registros1 = $wpdb->get_results($wpdb->prepare("SELECT nombre FROM wp_hostels"));
+    $array = array();
+    foreach ( $registros1 as $i => $page1 )
+    {
+      array_push($array, $page1);
+    }
+?>
+<br><br>
 <div class="container">
     <div class="row">
-        <div class="col-12" style="margin: 120px;">
-            <h1>Consulta</h1>
-        </div>
+      <div class="col-md-12">
+      <form action="#" method="post">
+        <!-- <div class="form-group">
+          <input type="text" name="buscarHotel" class="form-control" id="tag" placeholder="Donde Estas?" >
+        </div> -->
+
+          <select class="selectpicker" data-live-search="true" name="buscarHotel">
+          <?php
+            global $wpdb;
+            $registros3 = $wpdb->get_results($wpdb->prepare("SELECT campo FROM tabla"));
+            foreach ( $registros3 as $i => $page )
+            { ?>
+                 <option data-tokens="<?php echo $page->id; ?>"><?php echo $page->nombre; ?></option>
+            <?php } ?>
+          </select>
+
+        <input class="btn btn-primary" type="submit" value="buscar">
+      </div>
+      </form>
     </div>
 </div>
 
 <?php
- error_reporting(0);
-
-// global $wpdb;
-// //  $result = $wpdb->get_results ( "SELECT * FROM  $wpdb->posts WHERE post_type = 'page'" );
-// $result = $wpdb->get_results ( "SELECT * FROM  $wpdb->test WHERE mapa = 'lima'" );
-// foreach ( $result as $page )
-// {
-//    echo $page->ID.'<br/>';
-//    echo $page->post_status.'<br/>';
-// }
-
-global $wpdb;
-    $result = $wpdb->get_results($wpdb->prepare(  "SELECT * FROM wp_hostels"));
-    foreach ( $result as $page )
+    // para consulta del buscador
+    error_reporting(0);
+    global $wpdb;
+    $registros = $wpdb->get_results($wpdb->prepare("SELECT * FROM tabla WHERE campo='$_POST[buscarHotel]'"));
+    foreach ( $registros as $i => $page )
     {
-        echo $page->nombre.'<br/>';
-        echo $page->msn.'<br/>';
+        echo $page->nombre.'<br/>'; 
+        echo $page->stops.'<br/>';  
         echo $page->mapa.'<br/>';
-    }
+      }
 ?>
 
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/js/bootstrap-select.min.js"></script>
+<script>
+    var options = {
+        ajax          : {
+            url     : '/ajax',
+            type    : 'POST',
+            dataType: 'json',
+            data    : {
+                q: '{{{q}}}'
+            }
+        },
+        locale        : {
+            emptyTitle: 'Select and Begin Typing'
+        },
+        log           : 3,
+        preprocessData: function (data) {
+            var i, l = data.length, array = [];
+            if (l) {
+                for (i = 0; i < l; i++) {
+                    array.push($.extend(true, data[i], {
+                        text : data[i].Name,
+                        value: data[i].Email,
+                        data : {
+                            subtext: data[i].Email
+                        }
+                    }));
+                }
+            }
+            return array;
+        }
+    };
+    $('.selectpicker').selectpicker().filter('.with-ajax').ajaxSelectPicker(options);
+    $('select.after-init').append('<option value="neque.venenatis.lacus@neque.com" data-subtext="neque.venenatis.lacus@neque.com" selected="selected">Chancellor</option>').selectpicker('refresh');
+    $('select').trigger('change');
+</script>
 
-<hr>
-<hr>
-<hr>
-
-<?php
-// $args = array(
-//     'post_type' => 'Hostals',
-//     'post_per_page' => 10,
-//     'orderby' => 'title');
-//     $loop = new WP_Query($args);
-// while($loop->have_posts()): $loop->the_post();
-
-//  the_field( 'nombre_hostal' ); 
-//  the_field( 'mensaje_ubicacion' ); 
-//  the_field( 'mapa' ); 
-
-//  endwhile; wp_reset_postdata();
-  ?>   
-
-
-
-https://support.advancedcustomfields.com/forums/topic/custom-phpmyadmin-database-with-acf-fields/
-
-<!-- documentacion -->
-
-
-
-
-<?php get_footer(); ?>
